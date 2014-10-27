@@ -50,6 +50,4 @@ convert_solr
 
 exit $?
 
-#ruby fetch-data.rb
-#sh toMods.sh
-#sh toSolr.sh
+
