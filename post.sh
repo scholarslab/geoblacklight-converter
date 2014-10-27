@@ -1,8 +1,7 @@
 #! /usr/bin/env bash
 
-set -x
 
-SOLR_URL="http://localhost:8983/solr/update?commit=true"
+SOLR_URL="http://localhost:8983/solr/update"
 
 add_docs()
 {
@@ -14,6 +13,8 @@ add_docs()
 
 optimize()
 {
+  curl $SOLR_URL --data-binary '<commit/>' -H 'Content-type:text/xml; charset=utf-8'
+  echo "Optimizing"
   curl $SOLR_URL --data-binary '<optimize/>' -H 'Content-type:text/xml; charset=utf-8'
 }
 

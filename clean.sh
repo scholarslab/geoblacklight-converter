@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-set -x
+#set -x
 
 MODS_DIR="mods"
 GEOSERVER_ROOT="http://gis.lib.virginia.edu/geoserver"
@@ -14,9 +14,10 @@ make_dirs() {
 
 convert_mods() {
   for file in data/*.xml; do
-    ofn="$WORKDIR/`basename $file`"
+    ofn="$MODS_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      xsltproc xslt/iso2mods.xsl "$file" > "$ofn"
+      xsltproc \
+        xslt/iso2mods.xsl "$file" > "$ofn"
     fi
   done
 }

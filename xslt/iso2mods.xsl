@@ -70,8 +70,9 @@
         <xsl:if test="gmd:fileIdentifier/gco:CharacterString/text()">
           <xsl:variable name="fileIdentifier" select="."/>
         </xsl:if>
-         <xsl:variable name="purl" select="gmd:dataSetURI"/>
-        
+         <!-- <xsl:variable name="purl" select="gmd:dataSetURI"/> -->
+        <xsl:variable name="purl" select="fileIdentifier"/>
+         
         <titleInfo>
           <title>
             <xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"/>
