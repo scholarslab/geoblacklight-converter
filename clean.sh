@@ -12,17 +12,19 @@ COL_MAGENTA=$ESC_SEQ"35;01m"
 COL_CYAN=$ESC_SEQ"36;01m"
 
 MODS_DIR="mods"
+GEOB_DIR="geoblacklight"
+DATA_DIR="data"
 GEOSERVER_ROOT="http://gis.lib.virginia.edu/geoserver"
 STACKS_ROOT="http://gis.lib.virginia.edu"
-WORKDIR="geoblacklight"
 
 make_dirs() {
   mkdir -p $MODS_DIR
-  mkdir -p $WORKDIR
+  mkdir -p $GEOB_DIR
+  mkdir -p $DATA_DIR
 }
 
 convert_mods() {
-  for file in data/*.xml; do
+  for file in $DATA_DIR/*.xml; do
     ofn="$MODS_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
       echo  -e "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
@@ -34,8 +36,8 @@ convert_mods() {
 
 convert_solr()
 {
-  for file in mods/*.xml; do
-    ofn="$WORKDIR/`basename $file`"
+  for file in $MODS_DIR/*.xml; do
+    ofn="$GEOB_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
       echo  -e "$COL_GREEN Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
       xsltproc \
@@ -50,9 +52,9 @@ convert_solr()
 
 cleanup() {
   echo -e "$COL_CYAN Cleaning up old files... $COL_RESET"
-  rm -f data/*.xml
-  rm -f mods/*.xml
-  rm -f geoblacklight/*.xml
+  rm -f $DATA_DIR/*.xml
+  rm -f $MODS_DIR/*.xml
+  rm -f $GEOB_DIR/*.xml
 }
 
 clear
