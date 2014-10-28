@@ -25,7 +25,7 @@ convert_mods() {
   for file in data/*.xml; do
     ofn="$MODS_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
+      echo  -e "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
       xsltproc \
         xslt/iso2mods.xsl "$file" > "$ofn"
     fi
@@ -37,7 +37,7 @@ convert_solr()
   for file in mods/*.xml; do
     ofn="$WORKDIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  "$COL_GREEN Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
+      echo  -e "$COL_GREEN Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
       xsltproc \
         -stringparam geoserver_root $GEOSERVER_ROOT \
         -stringparam now `date -u "+%Y-%m-%dT%H:%M:00Z"` \
@@ -49,7 +49,7 @@ convert_solr()
 }
 
 cleanup() {
-  echo "$COL_CYAN Cleaning up old files... $COL_RESET"
+  echo -e "$COL_CYAN Cleaning up old files... $COL_RESET"
   rm -f data/*.xml
   rm -f mods/*.xml
   rm -f geoblacklight/*.xml
