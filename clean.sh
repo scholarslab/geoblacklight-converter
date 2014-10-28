@@ -18,6 +18,7 @@ GEOSERVER_ROOT="http://gis.lib.virginia.edu/geoserver"
 STACKS_ROOT="http://gis.lib.virginia.edu"
 
 make_dirs() {
+  echo -e "${COL_CYAN}Making data directories... $COL_RESET"
   mkdir -p $MODS_DIR
   mkdir -p $GEOB_DIR
   mkdir -p $DATA_DIR
@@ -39,7 +40,7 @@ convert_solr()
   for file in $MODS_DIR/*.xml; do
     ofn="$GEOB_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  -e "$COL_GREEN Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
+      echo  -e "$COL_GREEN  Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
       xsltproc \
         -stringparam geoserver_root $GEOSERVER_ROOT \
         -stringparam now `date -u "+%Y-%m-%dT%H:%M:00Z"` \
@@ -51,14 +52,20 @@ convert_solr()
 }
 
 cleanup() {
-  echo -e "$COL_CYAN Cleaning up old files... $COL_RESET"
+  echo -e "${COL_CYAN}Cleaning up old files... $COL_RESET"
   rm -f $DATA_DIR/*.xml
   rm -f $MODS_DIR/*.xml
   rm -f $GEOB_DIR/*.xml
 }
 
 clear
-cleanup
+
+if [ -d "$DATA_DIR" ]; then
+    cleanup
+else
+    make_dirs
+fi
+
 ruby fetch-data.rb
 convert_mods
 convert_solr
