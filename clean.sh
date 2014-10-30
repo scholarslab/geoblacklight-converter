@@ -14,18 +14,29 @@ COL_CYAN=$ESC_SEQ"36;01m"
 MODS_DIR="mods"
 GEOB_DIR="geoblacklight"
 DATA_DIR="data"
+ISOS_DIR="layers"
 GEOSERVER_ROOT="http://gis.lib.virginia.edu/geoserver"
 STACKS_ROOT="http://gis.lib.virginia.edu"
 
 make_dirs() {
   echo -e "${COL_CYAN}Making data directories... $COL_RESET"
-  mkdir -p $MODS_DIR
-  mkdir -p $GEOB_DIR
-  mkdir -p $DATA_DIR
+  mkdir -p {$MODS_DIR,$GEOB_DIR,$DATA_DIR,$ISOS_DIR}
+}
+
+breakout_layers() {
+    for file in $DATA_DIR/*.xml; do
+        # create partial path and filename for new files.
+        # get just the filename with basename, and remove .xml from the end
+        ofn="$ISOS_DIR/`basename ${file%.xml}`"
+        if [ ! -r "$ofn" ]; then
+            echo -e "$COL_GREEN Breaking out layers from$COL_YELLOW $file$COL_RESET$COL_GREEN to individual XML files.$COL_RESET"
+            xsltproc -stringparam baseName $ofn xslt/geonetwork2iso.xsl $file 
+        fi
+    done
 }
 
 convert_mods() {
-  for file in $DATA_DIR/*.xml; do
+  for file in $ISOS_DIR/*.xml; do
     ofn="$MODS_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
       echo  -e "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
@@ -56,6 +67,7 @@ cleanup() {
   rm -f $DATA_DIR/*.xml
   rm -f $MODS_DIR/*.xml
   rm -f $GEOB_DIR/*.xml
+  rm -f $ISOS_DIR/*.xml
 }
 
 clear
@@ -67,10 +79,9 @@ else
 fi
 
 ruby fetch-data.rb
+breakout_layers
 convert_mods
 convert_solr
 
 
 exit $?
-
-
