@@ -6,13 +6,13 @@
     <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
     <xsl:strip-space elements="*"/>
     
-    <xsl:template match="text()"></xsl:template>    
+    <xsl:template match="text()"/>    
     
     
     <!-- baseName is given as a stringparam when called by xsltproc. 
             stringparam includes the directory to use.
             ex: dirname/fileName -->
-    <xsl:param name="baseName"></xsl:param>
+    <xsl:param name="baseName"/>
 
     
 
@@ -20,7 +20,7 @@
     <xsl:template match="gmd:onLine">
         <!-- create a variable to act as an incrementing counter to use in the file name. -->
         <xsl:variable name="n"><xsl:number count="*" format="1"/></xsl:variable>
-        <!-- create file name at set to variable -->
+        <!-- create file name and set to variable -->
         <xsl:variable name="outFile"><xsl:value-of select="$baseName"/>-<xsl:value-of select="$n"/>.xml</xsl:variable>
         <!-- begin creating the contents of the file -->
         <xsl:document href="{$outFile}">
@@ -31,8 +31,8 @@
         </xsl:document>
     </xsl:template>
     
-    
-
+    <!-- Empty template so that we do not copy keywords -->
+    <xsl:template match="gmd:descriptiveKeywords" mode="copy"/>
 
     <!-- begins copy of entire document -->
     <xsl:template match="node() | @*" mode="copy">
