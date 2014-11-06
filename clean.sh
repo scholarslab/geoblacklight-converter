@@ -29,8 +29,8 @@ breakout_layers() {
         # get just the filename with basename, and remove .xml from the end
         ofn="$ISOS_DIR/`basename ${file%.xml}`"
         if [ ! -r "$ofn" ]; then
-            echo -e "$COL_GREEN Breaking out layers from$COL_YELLOW $file$COL_RESET$COL_GREEN to individual XML files.$COL_RESET"
-            xsltproc -stringparam baseName $ofn xslt/geonetwork2iso.xsl $file 
+            echo "$COL_GREEN Breaking out layers from$COL_YELLOW $file$COL_RESET$COL_GREEN to individual XML files.$COL_RESET"
+            xsltproc -stringparam baseName $ofn xslt/geonetwork2iso.xsl $file
         fi
     done
 }
@@ -39,7 +39,7 @@ convert_mods() {
   for file in $ISOS_DIR/*.xml; do
     ofn="$MODS_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  -e "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
+      echo "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
       xsltproc \
         xslt/iso2mods.xsl "$file" > "$ofn"
     fi
@@ -51,7 +51,7 @@ convert_solr()
   for file in $MODS_DIR/*.xml; do
     ofn="$GEOB_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  -e "$COL_GREEN  Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
+      echo "$COL_GREEN  Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
       xsltproc \
         -stringparam geoserver_root $GEOSERVER_ROOT \
         -stringparam now `date -u "+%Y-%m-%dT%H:%M:00Z"` \
@@ -63,11 +63,15 @@ convert_solr()
 }
 
 cleanup() {
-  echo -e "${COL_CYAN}Cleaning up old files... $COL_RESET"
+  echo "${COL_CYAN}Cleaning up old files... $COL_RESET"
   rm -f $DATA_DIR/*.xml
   rm -f $MODS_DIR/*.xml
   rm -f $GEOB_DIR/*.xml
   rm -f $ISOS_DIR/*.xml
+}
+
+replace_server() {
+  perl -i -pe 's/libsvr35/gis/' $DATA_DIR/*.xml
 }
 
 clear
@@ -79,6 +83,7 @@ else
 fi
 
 ruby fetch-data.rb
+replace_server
 breakout_layers
 convert_mods
 convert_solr
