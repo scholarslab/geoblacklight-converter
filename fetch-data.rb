@@ -12,6 +12,14 @@ class String
     colorize(32)
   end
 
+  def yellow
+    colorize(33)
+  end
+
+  def cyan
+    colorize(36)
+  end
+
 end
 
 CSV_FILE = 'uva.csv'
@@ -20,7 +28,7 @@ GN_PREFIX = 'http://gis.lib.virginia.edu:8080/geonetwork/srv/en/iso19139.xml?id=
 @csv = CSV.read(CSV_FILE, headers: true)
 
 @csv.each do |row|
-  puts "Downloading record #{row['id']} from Geonetwork...".green
+  puts "Downloading record ".green + "#{row['id']}".cyan + " from".green + " Geonetwork...".yellow
   `curl -s -L #{GN_PREFIX}#{row['id']} -o data/#{row['id']}.xml`
 end
 

@@ -63,7 +63,7 @@ convert_solr()
 }
 
 cleanup() {
-  echo "${COL_CYAN}Cleaning up old files... $COL_RESET"
+  echo -e "${COL_CYAN}Cleaning up old files... $COL_RESET"
   rm -f $DATA_DIR/*.xml
   rm -f $MODS_DIR/*.xml
   rm -f $GEOB_DIR/*.xml
