@@ -71,7 +71,7 @@
           <xsl:variable name="fileIdentifier" select="."/>
         </xsl:if>
          <!-- <xsl:variable name="purl" select="gmd:dataSetURI"/> -->
-        <xsl:variable name="purl" select="gmd:fileIdentifier/gco:CharacterString"/>
+         <xsl:variable name="purl" select="gmd:fileIdentifier/gco:CharacterString"/>
          
         <titleInfo>
           <title>
