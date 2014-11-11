@@ -29,8 +29,7 @@
   <xsl:strip-space elements="*"/>
   <xsl:template match="/mods:mods">
     <!-- XXX: Handle other institution naming schemes -->
-    <xsl:variable name="purl" select="$file" />
-    <!--<xsl:variable name="purl" select="mods:extension[@displayLabel='geo']/rdf:RDF/rdf:Description/@rdf:about"/>-->
+    <xsl:variable name="purl" select="mods:extension[@displayLabel='geo']/rdf:RDF/rdf:Description/@rdf:about"/>
     <xsl:variable name="druid" select="substring($purl, string-length($purl)-10)"/>
     <add>
       <doc>
