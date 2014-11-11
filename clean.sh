@@ -63,11 +63,15 @@ convert_solr()
 }
 
 cleanup() {
-  echo -e "${COL_CYAN}Cleaning up old files... $COL_RESET"
+  echo "${COL_CYAN}Cleaning up old files... $COL_RESET"
   rm -f $DATA_DIR/*.xml
   rm -f $MODS_DIR/*.xml
   rm -f $GEOB_DIR/*.xml
   rm -f $ISOS_DIR/*.xml
+}
+
+replace_server() {
+  perl -i -pe 's/libsvr35/gis/' $DATA_DIR/*.xml
 }
 
 clear
@@ -79,6 +83,7 @@ else
 fi
 
 ruby fetch-data.rb
+replace_server
 breakout_layers
 convert_mods
 convert_solr
