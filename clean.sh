@@ -29,7 +29,7 @@ breakout_layers() {
         # get just the filename with basename, and remove .xml from the end
         ofn="$ISOS_DIR/`basename ${file%.xml}`"
         if [ ! -r "$ofn" ]; then
-            echo -e "$COL_GREEN Breaking out layers from$COL_YELLOW $file$COL_RESET$COL_GREEN to individual XML files.$COL_RESET"
+            echo -e "$COL_GREEN Breaking out ${COL_BLUE}layers$COL_GREEN from$COL_YELLOW ${file}$COL_GREEN to individual XML files.$COL_RESET"
             xsltproc -stringparam baseName $ofn xslt/geonetwork2iso.xsl $file 
         fi
     done
@@ -39,7 +39,7 @@ convert_mods() {
   for file in $ISOS_DIR/*.xml; do
     ofn="$MODS_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  -e "$COL_GREEN Converting ISO for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to MODS $COL_RESET"
+      echo  -e "$COL_GREEN Converting ${COL_RED}ISO$COL_GREEN for$COL_YELLOW ${ofn}$COL_GREEN to ${COL_CYAN}MODS $COL_RESET"
       xsltproc \
         xslt/iso2mods.xsl "$file" > "$ofn"
     fi
@@ -51,7 +51,7 @@ convert_solr()
   for file in $MODS_DIR/*.xml; do
     ofn="$GEOB_DIR/`basename $file`"
     if [ ! -r "$ofn" ]; then
-      echo  -e "$COL_GREEN  Converting MODS for$COL_RESET$COL_YELLOW $ofn$COL_RESET$COL_GREEN to Solr $COL_RESET"
+      echo  -e "$COL_GREEN  Converting ${COL_CYAN}MODS$COL_GREEN for$COL_YELLOW ${ofn}$COL_GREEN to ${COL_MAGENTA}Solr $COL_RESET"
       xsltproc \
         -stringparam geoserver_root $GEOSERVER_ROOT \
         -stringparam now `date -u "+%Y-%m-%dT%H:%M:00Z"` \
