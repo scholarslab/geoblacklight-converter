@@ -56,6 +56,7 @@ convert_solr()
         -stringparam geoserver_root $GEOSERVER_ROOT \
         -stringparam now `date -u "+%Y-%m-%dT%H:%M:00Z"` \
         -stringparam rights "Public" \
+        -stringparam file ${file%.xml} \
         -stringparam stacks_root $STACKS_ROOT \
         xslt/mods2geoblacklight.xsl "$file" > "$ofn"
     fi
