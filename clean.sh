@@ -72,6 +72,7 @@ cleanup() {
 
 replace_server() {
   perl -i -pe 's/libsvr35/gis/' $DATA_DIR/*.xml
+  perl -i -pe 's/ows/geoserver/' $DATA_DIR/*.xml
 }
 
 clear
