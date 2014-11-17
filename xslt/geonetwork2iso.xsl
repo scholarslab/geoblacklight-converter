@@ -21,8 +21,16 @@
     <xsl:template match="gmd:onLine">
         <!-- create a variable to act as an incrementing counter to use in the file name. -->
         <xsl:variable name="n"><xsl:number count="*" format="1"/></xsl:variable>
+        
+        <xsl:variable name="check">
+            <xsl:choose>
+                <xsl:when test="$n &lt; 5">-check</xsl:when>
+                <xsl:otherwise></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
         <!-- create file name and set to variable -->
-        <xsl:variable name="outFile"><xsl:value-of select="$baseName"/>-<xsl:value-of select="$n"/>.xml</xsl:variable>
+        <xsl:variable name="outFile"><xsl:value-of select="$baseName"/>-<xsl:value-of select="$n"/><xsl:value-of select="$check"/>.xml</xsl:variable>
         <!-- begin creating the contents of the file -->
         <xsl:document href="{$outFile}">
             <xsl:apply-templates select="/" mode="copy">
