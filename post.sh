@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-
-SOLR_URL="http://localhost:8983/solr/update"
+local_solr="http://localhost:8983/solr/update"
+SOLR_URL=${$1:-local_solr}
 
 add_docs()
 {
