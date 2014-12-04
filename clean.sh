@@ -24,15 +24,15 @@ make_dirs() {
 }
 
 breakout_layers() {
-    for file in $DATA_DIR/*.xml; do
-        # create partial path and filename for new files.
-        # get just the filename with basename, and remove .xml from the end
-        ofn="$ISOS_DIR/$(basename "${file%.xml}")"
-        if [ ! -r "$ofn" ]; then
-            echo "$COL_GREEN Breaking out ${COL_BLUE}layers$COL_GREEN from$COL_YELLOW ${file}$COL_GREEN to individual XML files.$COL_RESET"
-            xsltproc -stringparam baseName "$ofn" xslt/geonetwork2iso.xsl "$file"
-        fi
-    done
+  for file in $DATA_DIR/*.xml; do
+    # create partial path and filename for new files.
+    # get just the filename with basename, and remove .xml from the end
+    ofn="$ISOS_DIR/$(basename "${file%.xml}")"
+    if [ ! -r "$ofn" ]; then
+      echo "$COL_GREEN Breaking out ${COL_BLUE}layers$COL_GREEN from$COL_YELLOW ${file}$COL_GREEN to individual XML files.$COL_RESET"
+      xsltproc -stringparam baseName "$ofn" xslt/geonetwork2iso.xsl "$file"
+    fi
+  done
 }
 
 convert_mods() {
@@ -42,6 +42,18 @@ convert_mods() {
       echo "$COL_GREEN Converting ${COL_RED}ISO$COL_GREEN for$COL_YELLOW ${ofn}$COL_GREEN to ${COL_CYAN}MODS $COL_RESET"
       xsltproc \
         xslt/iso2mods.xsl "$file" > "$ofn"
+    fi
+  done
+}
+
+layers_to_solr()
+{
+  for file in $ISOS_DIR/*.xml; do
+    ofn="$GEOB_DIR/$(basename "$file")"
+    if [ ! -r "$ofn" ]; then
+      echo "$COL_GREEN Converting ${COL_RED}ISO$COL_GREEN for$COL_YELLOW ${ofn}$COL_GREEN to ${COL_CYAN}Solr $COL_RESET"
+      xsltproc \
+        xslt/geonetwork2solr.xsl "$file" > "$ofn"
     fi
   done
 }
@@ -78,16 +90,17 @@ replace_server() {
 clear
 
 if [ -d "$DATA_DIR" ]; then
-    cleanup
+  cleanup
 else
-    make_dirs
+  make_dirs
 fi
 
 ruby fetch-data.rb
 replace_server
 breakout_layers
-convert_mods
-convert_solr
+layers_to_solr
+#convert_mods
+#convert_solr
 
 
 exit $?
