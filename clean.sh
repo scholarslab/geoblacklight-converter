@@ -15,12 +15,13 @@ MODS_DIR="mods"
 GEOB_DIR="geoblacklight"
 DATA_DIR="data"
 ISOS_DIR="layers"
+META_DIR="edu.virginia"
 GEOSERVER_ROOT="http://gis.lib.virginia.edu/geoserver"
 STACKS_ROOT="http://gis.lib.virginia.edu"
 
 make_dirs() {
   echo "${COL_CYAN}Making data directories... $COL_RESET"
-  mkdir -p {$MODS_DIR,$GEOB_DIR,$DATA_DIR,$ISOS_DIR}
+  mkdir -p {$MODS_DIR,$GEOB_DIR,$DATA_DIR,$ISOS_DIR,$META_DIR}
 }
 
 breakout_layers() {
@@ -46,6 +47,34 @@ convert_mods() {
   done
 }
 
+metadata_repo()
+{
+  echo "files"
+  for file in $ISOS_DIR/*.xml; do
+   dir="$META_DIR/${file##*/}"
+    #dir="$META_DIR/${file%.*}"
+
+    if [[ $dir == *"check"* ]]
+    then
+      echo "Skipping $file"
+    else
+      mkdir -p $dir
+      cp $file $dir/iso19139.xml
+      echo "$COL_GREEN Moving ${COL_RED}$dir${COL_GREEN} to its own directory"
+    fi
+  done
+}
+
+layers_to_solr2()
+{
+  for file in $META_DIR/**/iso19139.xml; do
+     echo "$COL_GREEN Converting ${COL_RED}ISO$COL_GREEN $file for$COL_YELLOW $COL_GREEN to ${COL_CYAN}Solr $COL_RESET"
+     path=$(dirname "$file")
+     xsltproc \
+       xslt/geonetwork2solr.xsl "$file" > "$path/geoblacklight.xml"
+  done
+}
+
 layers_to_solr()
 {
   for file in $ISOS_DIR/*.xml; do
@@ -57,7 +86,7 @@ layers_to_solr()
     fi
   done
 }
-
+j
 convert_solr()
 {
   for file in $MODS_DIR/*.xml; do
@@ -89,16 +118,18 @@ replace_server() {
 
 clear
 
-if [ -d "$DATA_DIR" ]; then
-  cleanup
-else
-  make_dirs
-fi
+#if [ -d "$DATA_DIR" ]; then
+  #cleanup
+#else
+  #make_dirs
+#fi
 
 ruby fetch-data.rb
 replace_server
 breakout_layers
-layers_to_solr
+metadata_repo
+layers_to_solr2
+#layers_to_solr
 #convert_mods
 #convert_solr
 
