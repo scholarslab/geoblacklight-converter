@@ -118,11 +118,11 @@ replace_server() {
 
 clear
 
-#if [ -d "$DATA_DIR" ]; then
-  #cleanup
-#else
-  #make_dirs
-#fi
+if [ -d "$DATA_DIR" ]; then
+  cleanup
+else
+  make_dirs
+fi
 
 ruby fetch-data.rb
 replace_server

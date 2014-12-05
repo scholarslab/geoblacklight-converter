@@ -24,7 +24,7 @@
         
         <xsl:variable name="check">
             <xsl:choose>
-                <xsl:when test="$n &lt; 5">-check</xsl:when>
+                <xsl:when test="$n &lt; 4">-check</xsl:when>
                 <xsl:otherwise></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
