@@ -5,12 +5,11 @@ local_solr="http://localhost:8983/solr/update"
 SOLR_URL=$local_solr
 
 
-
 add_docs()
 {
-  for file in geoblacklight/*.xml; do
+  for file in edu.virginia/**/geoblacklight.xml; do
     echo "Posting $f to $SOLR_URL..."
-    curl $SOLR_URL --data-binary @$file -H 'Content-type:text/xml; charset=utf-8'
+    curl "$SOLR_URL" --data-binary "@$file" -H 'Content-type:text/xml; charset=utf-8'
   done
 }
 

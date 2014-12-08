@@ -51,15 +51,17 @@ metadata_repo()
 {
   echo "files"
   for file in $ISOS_DIR/*.xml; do
-   dir="$META_DIR/${file##*/}"
+    dir="$META_DIR/${file##*/}"
     #dir="$META_DIR/${file%.*}"
 
     if [[ $dir == *"check"* ]]
     then
       echo "Skipping $file"
     else
-      mkdir -p $dir
-      cp $file $dir/iso19139.xml
+      #clean_dir=`$dir | cut -d. -f1`
+      #echo "Updated directory: $clean_dir"
+      mkdir -p "$dir"
+      cp "$file" "$dir/iso19139.xml"
       echo "$COL_GREEN Moving ${COL_RED}$dir${COL_GREEN} to its own directory"
     fi
   done
