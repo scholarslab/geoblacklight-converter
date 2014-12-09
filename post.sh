@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 
-local_solr="http://localhost:8983/solr/update"
+#local_solr="http://localhost:8983/solr/update"
 #SOLR_URL=${$1:-local_solr}
+local_solr="http://geoblacklight.lib.virginia.edu:8080/solr/geoblacklight/update"
 SOLR_URL=$local_solr
 
 
