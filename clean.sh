@@ -88,7 +88,7 @@ layers_to_solr()
     fi
   done
 }
-j
+
 convert_solr()
 {
   for file in $MODS_DIR/*.xml; do
