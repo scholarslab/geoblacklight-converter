@@ -150,7 +150,7 @@
       <xsl:text>
     "dct_provenance_s": "</xsl:text><xsl:value-of select="$institution"/><xsl:text>",</xsl:text>
       <xsl:text>
-    "dct_references_s": "{\"http://schema.org/url\":\"</xsl:text><xsl:value-of select="gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/><xsl:text>\",\"http://schema.org/downloadUrl\":\"http://gis.lib.virginia.edu/geoserver/wfs/reflect?layers=</xsl:text><xsl:value-of select="$layer_name"/><xsl:text>&amp;outputFormat=shape-zip\",<!-- \"http://www.loc.gov/mods/v3\":\"http://purl.stanford.edu/bc899yk4538.mods\", -->\"http://www.isotc211.org/schemas/2005/gmd/\":\"</xsl:text><xsl:value-of select="gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/><xsl:text>.iso19139\",<!--\"http://www.w3.org/1999/xhtml\":\"http://opengeometadata.stanford.edu/metadata/edu.stanford.purl/druid:bc899yk4538/default.html\",-->\"http://www.opengis.net/def/serviceType/ogc/wms\":\"http://gis.lib.virginia.edu/geoserver/wms\",\"http://www.opengis.net/def/serviceType/ogc/wfs\":\"http://gis.lib.virginia.edu/geoserver/wfs\",\"http://www.opengis.net/def/serviceType/ogc/wcs\":\"http://gis.lib.virginia.edu/geoserver/wcs\"}",</xsl:text>
+    "dct_references_s": "{\"http://schema.org/url\":\"</xsl:text><xsl:value-of select="gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/><xsl:text>\",\"http://schema.org/downloadUrl\":\"http://gis.lib.virginia.edu/geoserver/ows?service=WFS&amp;typeName=</xsl:text><xsl:value-of select="$layer_name"/><xsl:text>&amp;request=GetFeature&amp;outputFormat=shape-zip\",<!-- \"http://www.loc.gov/mods/v3\":\"http://purl.stanford.edu/bc899yk4538.mods\", -->\"http://www.isotc211.org/schemas/2005/gmd/\":\"</xsl:text><xsl:value-of select="gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/><xsl:text>.iso19139\",<!--\"http://www.w3.org/1999/xhtml\":\"http://opengeometadata.stanford.edu/metadata/edu.stanford.purl/druid:bc899yk4538/default.html\",-->\"http://www.opengis.net/def/serviceType/ogc/wms\":\"http://gis.lib.virginia.edu/geoserver/wms\",\"http://www.opengis.net/def/serviceType/ogc/wfs\":\"http://gis.lib.virginia.edu/geoserver/wfs\",\"http://www.opengis.net/def/serviceType/ogc/wcs\":\"http://gis.lib.virginia.edu/geoserver/wcs\"}",</xsl:text>
       <xsl:text>
     "layer_id_s": "</xsl:text>
         <xsl:value-of select="gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:name"/>
@@ -187,7 +187,7 @@
             <xsl:text>
     "layer_modified_dt": "</xsl:text>
               <xsl:value-of select="gmd:MD_Metadata/gmd:dateStamp"/>
-              <xsl:text>",</xsl:text>
+              <xsl:text>Z",</xsl:text>
           </xsl:when>
         </xsl:choose>
 
@@ -394,26 +394,37 @@
           <xsl:text>
     "solr_geom": "ENVELOPE(</xsl:text>
           <xsl:value-of select="$x1"/>
-          <xsl:text> </xsl:text>
-          <xsl:value-of select="$y1"/>
           <xsl:text>, </xsl:text>
           <xsl:value-of select="$x2"/>
-          <xsl:text> </xsl:text>
-          <xsl:value-of select="$y1"/>
           <xsl:text>, </xsl:text>
-          <xsl:value-of select="$x2"/>
-          <xsl:text> </xsl:text>
           <xsl:value-of select="$y2"/>
           <xsl:text>, </xsl:text>
-          <xsl:value-of select="$x1"/>
-          <xsl:text> </xsl:text>
-          <xsl:value-of select="$y2"/>
-          <xsl:text>, </xsl:text>
-          <xsl:value-of select="$x1"/>
-          <xsl:text> </xsl:text>
           <xsl:value-of select="$y1"/>
           <xsl:text>)",</xsl:text>
-        
+<!-- old format
+    <xsl:text>
+    "solr_geom": "ENVELOPE(</xsl:text>
+    <xsl:value-of select="$x1"/>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$y1"/>
+    <xsl:text>, </xsl:text>
+    <xsl:value-of select="$x2"/>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$y1"/>
+    <xsl:text>, </xsl:text>
+    <xsl:value-of select="$x2"/>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$y2"/>
+    <xsl:text>, </xsl:text>
+    <xsl:value-of select="$x1"/>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$y2"/>
+    <xsl:text>, </xsl:text>
+    <xsl:value-of select="$x1"/>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$y1"/>
+    <xsl:text>)",</xsl:text>
+-->        
         <xsl:text>
     "georss_box_s": "</xsl:text>
           <xsl:value-of select="$y1"/>
@@ -423,16 +434,18 @@
           <xsl:value-of select="$y2"/>
           <xsl:text> </xsl:text>
           <xsl:value-of select="$x2"/>
-        <xsl:text>",</xsl:text>
+    <xsl:text>"</xsl:text>
         
         <!-- content date: singular, or beginning date of range: YYYY -->
         <xsl:choose>
           <xsl:when test="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition/text() != ''">
+            <xsl:text>,</xsl:text>
             <xsl:text>
     "solr_year_i": </xsl:text>
               <xsl:value-of select="substring(gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition, 1,4)"/>
           </xsl:when>
           <xsl:when test="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimeInstant">
+            <xsl:text>,</xsl:text>
             <xsl:text>
     "solr_year_i": </xsl:text>
               <xsl:value-of select="substring(gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimeInstant, 1,4)"/>
