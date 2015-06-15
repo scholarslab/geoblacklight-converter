@@ -23,10 +23,10 @@ Dir.glob('../edu.virginia/**/geoblacklight.json').each do |doc|
   contents = IO.read(file)
   begin
     data_hash = JSON.parse(contents)
-    layer = data_hash['add']['doc']['layer_id_s']
+    layer = data_hash['layer_id_s']
     type = fetch_type(layer)
-    data_hash['add']['doc']['layer_geom_type_s'] = type
-    pp data_hash.to_json
+    data_hash['layer_geom_type_s'] = type
+    IO.write(file, data_hash.to_json)
   rescue
     puts "#{doc} has an error"
     exit
