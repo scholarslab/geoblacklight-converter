@@ -100,7 +100,8 @@ class Iso2Json
     elsif @doc.xpath("gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue").text == "vector"
       format_mime = "application/x-esri-shapefile"
     else
-      abort("Invalid format: #{format_name}")
+      # abort("Invalid format: #{format_name}")
+      format_mime = ""
     end
 
     format_mime
@@ -170,8 +171,7 @@ class Iso2Json
   end
 
   def layer_geom_type_s
-    # TODO
-    "Polygon"
+    Utils::fetch_type layer_id_s
   end
 
   def layer_modified_dt
@@ -375,4 +375,19 @@ class Iso2Json
   end
 end
 
-puts Iso2Json.new(ARGV[0]).to_json
+Dir.glob('../edu.virginia/**/iso19139.xml').each do |input_file|
+  output_file = File::dirname(input_file) + "/geoblacklight.json"
+  puts "#{input_file} => #{output_file}"
+
+  begin
+    iso2json = Iso2Json.new(input_file)
+    f = File.open(output_file, 'w')
+    begin
+      IO.write(f, JSON.pretty_generate(iso2json.to_h, {:indent => "    "}))
+    ensure
+      f.close
+    end
+  rescue
+    puts "#{input_file} has an error"
+  end
+end
