@@ -1,11 +1,15 @@
 #! /usr/bin/env ruby
 
+# usage: ./iso2json.rb [-v | --verbose]
+
 require 'open-uri'
 require 'json'
 require 'pp'
 require 'nokogiri'
 
+METADATA_URL = "https://opengeometadata.github.io/edu.virginia"
 PREFIX = "http://gis.lib.virginia.edu:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&maxfeatures=1&outputformat=json&typeName="
+VERBOSE = ARGV.include?("-v") || ARGV.include?("--verbose")
 
 module Utils
   def self.fetch_type(layer)
@@ -156,9 +160,9 @@ class Iso2Json
       "http://www.opengis.net/def/serviceType/ogc/wms" => "http://gis.lib.virginia.edu/geoserver/wms",
       "http://www.opengis.net/def/serviceType/ogc/wfs" => "http://gis.lib.virginia.edu/geoserver/wfs",
       "http://www.opengis.net/def/serviceType/ogc/wcs" => "http://gis.lib.virginia.edu/geoserver/wcs",
-      "http://schema.org/url" => "https://geoblacklight.lib.virginia.edu/metadata/edu.virginia/#{file_id}/iso19139.html",
+      "http://schema.org/url" => "#{METADATA_URL}/#{file_id}/iso19139.html",
       "http://schema.org/downloadUrl" => "http://gis.lib.virginia.edu/geoserver/ows?service=WFS&typeName=#{layer_name}&request=GetFeature&outputFormat=shape-zip",
-      "http://www.isotc211.org/schemas/2005/gmd/" => "https://geoblacklight.lib.virginia.edu/metadata/edu.virginia/#{file_id}/iso19139.xml",
+      "http://www.isotc211.org/schemas/2005/gmd/" => "#{METADATA_URL}/#{file_id}/iso19139.xml",
     }.to_json
   end
 
@@ -377,7 +381,7 @@ end
 
 Dir.glob('../edu.virginia/**/iso19139.xml').each do |input_file|
   output_file = File::dirname(input_file) + "/geoblacklight.json"
-  puts "#{input_file} => #{output_file}"
+  puts "#{input_file} => #{output_file}" if VERBOSE
 
   begin
     iso2json = Iso2Json.new(input_file)
