@@ -6,6 +6,7 @@ require 'open-uri'
 require 'json'
 require 'pp'
 require 'nokogiri'
+require 'active_support/all' # deal with it
 
 METADATA_URL = "https://opengeometadata.github.io/edu.virginia"
 PREFIX = "http://gis.lib.virginia.edu:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&maxfeatures=1&outputformat=json&typeName="
@@ -160,7 +161,7 @@ class Iso2Json
       "http://www.opengis.net/def/serviceType/ogc/wms" => "http://gis.lib.virginia.edu/geoserver/wms",
       "http://www.opengis.net/def/serviceType/ogc/wfs" => "http://gis.lib.virginia.edu/geoserver/wfs",
       "http://www.opengis.net/def/serviceType/ogc/wcs" => "http://gis.lib.virginia.edu/geoserver/wcs",
-      "http://schema.org/url" => "#{METADATA_URL}/#{file_id}/iso19139.html",
+      #"http://schema.org/url" => "#{METADATA_URL}/#{file_id}/iso19139.html",
       "http://schema.org/downloadUrl" => "http://gis.lib.virginia.edu/geoserver/ows?service=WFS&typeName=#{layer_name}&request=GetFeature&outputFormat=shape-zip",
       "http://www.isotc211.org/schemas/2005/gmd/" => "#{METADATA_URL}/#{file_id}/iso19139.xml",
     }.to_json
@@ -219,7 +220,7 @@ class Iso2Json
     unless keywords.nil?
       dc_subject = @doc.xpath(
         "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode"
-      ).map { |node| node.text.strip }
+      ).map { |node| node.text.strip.underscore.titleize }
     end
 
     dc_subject
