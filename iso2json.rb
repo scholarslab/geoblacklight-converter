@@ -7,7 +7,7 @@ require 'json'
 require 'pp'
 require 'nokogiri'
 
-METADATA_URL = "https://opengeometadata.github.io/edu.virginia"
+METADATA_URL = "https://opengeometadata.github.io/"
 PREFIX = "http://gis.lib.virginia.edu:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&maxfeatures=1&outputformat=json&typeName="
 VERBOSE = ARGV.include?("-v") || ARGV.include?("--verbose")
 
@@ -152,9 +152,7 @@ class Iso2Json
   end
 
   def dct_references_s
-    file_id = @doc.xpath(
-      "gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"
-    ).text.strip
+    file_id = @input_file[3..-1]
 
     {
       "http://www.opengis.net/def/serviceType/ogc/wms" => "http://gis.lib.virginia.edu/geoserver/wms",
