@@ -15,7 +15,7 @@ SOLR_URL=$local_solr
 add_docs()
 {
   for file in $(find $DATA_DIR -name "geoblacklight.xml"); do
-    echo "Posting $f to $SOLR_URL..."
+    echo "Posting $f to Solr"
     curl "$SOLR_URL" --data-binary "@$file" -H 'Content-type:text/xml; charset=utf-8'
   done
 }
@@ -23,7 +23,7 @@ add_docs()
 add_json()
 {
   for file in $(find $DATA_DIR -name "geoblacklight.json"); do
-    echo "Posting $file to $SOLR_URL ..."
+    echo "Posting $file to Solr ..."
     # libsvr40
     curl "$SOLR_URL/?commit=true" --data-binary "[$( < $file)]" -H 'Content-type:application/json'
     # local

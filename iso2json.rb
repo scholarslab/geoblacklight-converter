@@ -8,7 +8,7 @@ require 'pp'
 require 'nokogiri'
 require 'active_support/all' # deal with it
 
-METADATA_URL = "https://opengeometadata.github.io/edu.virginia"
+METADATA_URL = "https://opengeometadata.github.io/"
 PREFIX = "http://gis.lib.virginia.edu:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&maxfeatures=1&outputformat=json&typeName="
 VERBOSE = ARGV.include?("-v") || ARGV.include?("--verbose")
 
@@ -153,9 +153,7 @@ class Iso2Json
   end
 
   def dct_references_s
-    file_id = @doc.xpath(
-      "gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"
-    ).text.strip
+    file_id = @input_file[3..-1]
 
     {
       "http://www.opengis.net/def/serviceType/ogc/wms" => "http://gis.lib.virginia.edu/geoserver/wms",
@@ -163,7 +161,7 @@ class Iso2Json
       "http://www.opengis.net/def/serviceType/ogc/wcs" => "http://gis.lib.virginia.edu/geoserver/wcs",
       #"http://schema.org/url" => "#{METADATA_URL}/#{file_id}/iso19139.html",
       "http://schema.org/downloadUrl" => "http://gis.lib.virginia.edu/geoserver/ows?service=WFS&typeName=#{layer_name}&request=GetFeature&outputFormat=shape-zip",
-      "http://www.isotc211.org/schemas/2005/gmd/" => "#{METADATA_URL}/#{file_id}/iso19139.xml",
+      "http://www.isotc211.org/schemas/2005/gmd/" => "#{METADATA_URL}#{file_id}",
     }.to_json
   end
 
