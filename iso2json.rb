@@ -92,22 +92,36 @@ class Iso2Json
   end
 
   def format_mime
+
     format_name = @doc.xpath(
-      "gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name"
+      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue"
     ).text
 
-    if format_name.include? "Raster Dataset"
-      format_mime = "image/tiff"
-    elsif format_name.include? "GeoTIFF"
-      format_mime = "image/tiff"
-    elsif format_name.include? "Shapefile"
-      format_mime = "application/x-esri-shapefile"
-    elsif @doc.xpath("gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue").text == "vector"
-      format_mime = "application/x-esri-shapefile"
+    case format_name
+    when "vector"
+      format_mime = "Shapefile"
+    when "grid"
+      format_mime = "GeoTIFF"
     else
-      # abort("Invalid format: #{format_name}")
-      format_mime = ""
+      format_mime = "GeoTIFF" # this is temporary; there are 16 layers without this metadata
     end
+
+    #format_name = @doc.xpath(
+      #"gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name"
+    #).text
+
+    #if format_name.include? "Raster Dataset"
+      #format_mime = "image/tiff"
+    #elsif format_name.include? "GeoTIFF"
+      #format_mime = "image/tiff"
+    #elsif format_name.include? "Shapefile"
+      #format_mime = "application/x-esri-shapefile"
+    #elsif @doc.xpath("gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue").text == "vector"
+      #format_mime = "application/x-esri-shapefile"
+    #else
+      ## abort("Invalid format: #{format_name}")
+      #format_mime = ""
+    #end
 
     format_mime
   end
@@ -152,7 +166,21 @@ class Iso2Json
     institute
   end
 
+  def download_url(format)
+    url = 'http://gis.lib.virginia.edu/geoserver'
+
+    case format
+    when "Shapefile"
+      url += "/ows?service=WFS&typeName=#{layer_name}&request=GetFeature&outputFormat=shape-zip"
+    when "GeoTIFF"
+      url += "/wms/reflect?layers=#{layer_name}&format=image/tiff&width=3000&height=3000"
+    end
+
+    url
+  end
+
   def dct_references_s
+    format = format_mime
     file_id = @input_file[3..-1]
 
     {
@@ -160,7 +188,8 @@ class Iso2Json
       "http://www.opengis.net/def/serviceType/ogc/wfs" => "http://gis.lib.virginia.edu/geoserver/wfs",
       "http://www.opengis.net/def/serviceType/ogc/wcs" => "http://gis.lib.virginia.edu/geoserver/wcs",
       #"http://schema.org/url" => "#{METADATA_URL}/#{file_id}/iso19139.html",
-      "http://schema.org/downloadUrl" => "http://gis.lib.virginia.edu/geoserver/ows?service=WFS&typeName=#{layer_name}&request=GetFeature&outputFormat=shape-zip",
+      #"http://schema.org/downloadUrl" => "http://gis.lib.virginia.edu/geoserver/ows?service=WFS&typeName=#{layer_name}&request=GetFeature&outputFormat=shape-zip",
+      "http://schema.org/downloadUrl" => "#{download_url(format)}",
       "http://www.isotc211.org/schemas/2005/gmd/" => "#{METADATA_URL}#{file_id}",
     }.to_json
   end
