@@ -10,7 +10,7 @@ make_json()
 {
   for file in $(find $DATA_DIR -name "iso19139.xml"); do
     path=$(dirname $file)
-    xsltproc xslt/iso2json.xsl $file > "$path/geoblacklight.json"
+    ./iso2json.rb $file # > "$path/geoblacklight.json"
   done
 }
 
