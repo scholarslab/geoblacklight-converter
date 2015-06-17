@@ -19,7 +19,7 @@ module Utils
       response = JSON.parse(open(url).read)
       response["features"].first["geometry"]["type"]
     rescue
-      "Polygon"
+      "Raster" # if it's not a geometry type, it's an image
       #pp "Something went wrong for #{layer}"
     end
   end
