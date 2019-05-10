@@ -41,31 +41,30 @@ class Iso2Json
 
   def institute
     institute_node = @doc.xpath(
-      "/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString"
+      "/MD_Metadata/contact/CI_ResponsibleParty/organisationName/gco:CharacterString"
     ).text
 
     if institute_node.include? "Stanford"
-      institute = "Stanford"
+      "Stanford"
     elsif institute_node.include? "Virginia"
-      institute = "UVa"
+      "UVa"
     elsif institute_node.include? "Scholars"
-      institute = "UVa"
+      "UVa"
     else
-      abort("Unknown institution: #{institute_node}")
+      #abort("Unknown institution: #{institute_node}")
+      institute_node
     end
-
-    institute
   end
 
   def layer_name
     @doc.xpath(
-      "/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:name"
+      "/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/title"
     ).text.strip
   end
 
   def resource_name
     Utils::norm_text(
-      @doc, "gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:name"
+      @doc, "/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/title"
     )
   end
 
@@ -87,14 +86,14 @@ class Iso2Json
 
   def bbox_point(direction, dimension)
     @doc.xpath(
-      "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:#{direction}Bound#{dimension}/gco:Decimal"
+      "/MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/geographicElement/EX_GeographicBoundingBox/#{direction}Bound#{dimension}/gco:Decimal"
     ).text.to_f
   end
 
   def format_mime
 
     format_name = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/spatialRepresentationType/MD_SpatialRepresentationTypeCode/@codeListValue"
     ).text
 
     case format_name
@@ -107,7 +106,7 @@ class Iso2Json
     end
 
     #format_name = @doc.xpath(
-      #"gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name"
+      #"MD_Metadata/distributionInfo/MD_Distribution/distributionFormat/MD_Format/name"
     #).text
 
     #if format_name.include? "Raster Dataset"
@@ -116,7 +115,7 @@ class Iso2Json
       #format_mime = "image/tiff"
     #elsif format_name.include? "Shapefile"
       #format_mime = "application/x-esri-shapefile"
-    #elsif @doc.xpath("gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue").text == "vector"
+    #elsif @doc.xpath("MD_Metadata/identificationInfo/MD_DataIdentification/spatialRepresentationType/MD_SpatialRepresentationTypeCode/@codeListValue").text == "vector"
       #format_mime = "application/x-esri-shapefile"
     #else
       ## abort("Invalid format: #{format_name}")
@@ -128,7 +127,7 @@ class Iso2Json
 
   def uuid
     @doc
-      .xpath("/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString")
+      .xpath("/MD_Metadata/fileIdentifier/gco:CharacterString")
       .text
   end
 
@@ -141,20 +140,22 @@ class Iso2Json
   end
 
   def dc_identifier_s
+    puts @doc.xpath("//fileIdentifier").text
+
     Utils::norm_text(
-      @doc, "/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"
+      @doc, "/MD_Metadata/fileIdentifier/gco:CharacterString"
     )
   end
 
   def dc_title_s
     Utils::norm_text(
-      @doc, "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"
+      @doc, "MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/title"
     )
   end
 
   def dc_description_s
     @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/abstract"
     ).text.strip
   end
 
@@ -195,11 +196,11 @@ class Iso2Json
   end
 
   def layer_id_s
-    resource_name
+    resource_name.tr('. ', '__')
   end
 
   def layer_slug_s
-    "uva-#{resource_name}"
+    "uva-#{resource_name.tr(' .', '_')}"
   end
 
   def layer_geom_type_s
@@ -207,7 +208,7 @@ class Iso2Json
   end
 
   def layer_modified_dt
-    @doc.xpath("gmd:MD_Metadata/gmd:dateStamp")
+    @doc.xpath("MD_Metadata/dateStamp")
   end
 
   def dc_format_s
@@ -216,7 +217,7 @@ class Iso2Json
 
   def dc_language_s
     @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language/gco:CharacterString"
+      "MD_Metadata/language/LanguageCode"
     ).text
   end
 
@@ -224,7 +225,7 @@ class Iso2Json
     dc_type = nil
 
     level_name = @doc.xpath(
-      "gmd:MD_Metadata/gmd:hierarchyLevelName/gco:CharacterString"
+      "MD_Metadata/hierarchyLevelName/gco:CharacterString"
     )
     unless level_name.nil?
       level_name = level_name.text
@@ -242,11 +243,11 @@ class Iso2Json
     dc_subject = nil
 
     keywords = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode or gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/topicCategory/MD_TopicCategoryCode or MD_Metadata/identificationInfo/MD_DataIdentification/descriptiveKeywords/MD_Keywords"
     )
     unless keywords.nil?
       dc_subject = @doc.xpath(
-        "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode"
+        "MD_Metadata/identificationInfo/MD_DataIdentification/topicCategory/MD_TopicCategoryCode"
       ).map { |node| node.text.strip.underscore.titleize }
     end
 
@@ -257,14 +258,14 @@ class Iso2Json
     dc_spatial = nil
 
     keywords = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/descriptiveKeywords/MD_Keywords"
     )
     keywords.each do |node|
       place = node.xpath(
-        "gmd:type/gmd:MD_KeywordTypeCode[@codeListValue='place']"
+        "type/MD_KeywordTypeCode[@codeListValue='place']"
       )
       unless place.nil?
-        dc_spatial = node.xpath("gmd:keyword").to_a
+        dc_spatial = node.xpath("keyword").to_a
       end
     end
 
@@ -275,11 +276,11 @@ class Iso2Json
     dct_issued = nil
 
     citation_date = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:DateTime"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date/CI_Date/date/gco:DateTime"
     )
     if citation_date.nil?
       citation_date = @doc.xpath(
-        "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date"
+        "MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date/CI_Date/date/gco:Date"
       )
       dct_issued = citation_date.text unless citation_date.nil?
     else
@@ -293,19 +294,19 @@ class Iso2Json
     dct_temporal = nil
 
     time_begin = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/temporalElement/EX_TemporalExtent/extent/gml:TimePeriod/gml:beginPosition"
     )
 
     if time_begin.nil? || time_begin.text.empty?
       time_instant = @doc.xpath(
-        "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimeInstant"
+        "MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/temporalElement/EX_TemporalExtent/extent/gml:TimeInstant"
       )
       dct_temporal = time_instant.text[0..3] unless time_instant.nil?
 
     else
       time_begin = time_begin.text[0..3]
       time_end = @doc.xpath(
-        "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition"
+        "MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/temporalElement/EX_TemporalExtent/extent/gml:TimePeriod/gml:endPosition"
       )
       if (!time_end.nil?) && time_end.text != time_begin
         time_end = "-" + time_end.text[0..3]
@@ -322,12 +323,12 @@ class Iso2Json
     solr_year = nil
 
     time_begin = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/temporalElement/EX_TemporalExtent/extent/gml:TimePeriod/gml:beginPosition"
     )
 
     if time_begin.nil? || time_begin.text.empty?
       time_instant = @doc.xpath(
-        "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimeInstant"
+        "MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/temporalElement/EX_TemporalExtent/extent/gml:TimeInstant"
       )
       dct_temporal = time_instant.text[0..3] unless time_instant.nil?
       solr_year = dct_temporal.to_i
@@ -342,12 +343,12 @@ class Iso2Json
     dc_relation = nil
 
     assoc_type_code = @doc.xpath(
-      "gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo/gmd:MD_AggregateInformation/gmd:associationType/gmd:DS_AssociationTypeCode[@codeListValue='crossReference']"
+      "MD_Metadata/identificationInfo/MD_DataIdentification/aggregationInfo/MD_AggregateInformation/associationType/DS_AssociationTypeCode[@codeListValue='crossReference']"
     )
     unless assoc_type_code.nil?
       dc_relation = assoc_type_code.map do |node|
         node.xpath(
-          "ancestor-or-self::*/gmd:aggregateDataSetName/gmd:CI_Citation/gmd:title"
+          "ancestor-or-self::*/aggregateDataSetName/CI_Citation/title"
         ).text
       end
     end
@@ -387,7 +388,7 @@ class Iso2Json
     }
 
     unless layer_modified_dt.nil?
-      data["layer_modified_dt"] = layer_modified_dt.text.strip + "Z"
+      data["layer_modified_dt"] = layer_modified_dt.text.strip + "T00:00:00Z"
     end
     unless dc_relation_sm.nil? || dc_relation_sm.empty?
       data["dc_relation_sm"] = dc_relation_sm
@@ -407,19 +408,13 @@ class Iso2Json
   end
 end
 
-Dir.glob('../edu.virginia/**/iso19139.xml').each do |input_file|
+Dir.glob('./*.xml').each do |input_file|
   output_file = File::dirname(input_file) + "/geoblacklight.json"
   puts "#{input_file} => #{output_file}" if VERBOSE
 
-  begin
+  
     iso2json = Iso2Json.new(input_file)
     f = File.open(output_file, 'w')
-    begin
       IO.write(f, JSON.pretty_generate(iso2json.to_h, {:indent => "    "}))
-    ensure
       f.close
-    end
-  rescue
-    puts "#{input_file} has an error"
-  end
 end
