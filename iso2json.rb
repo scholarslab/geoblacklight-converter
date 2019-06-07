@@ -37,6 +37,7 @@ class Iso2Json
   def initialize input_file
     @input_file = input_file
     @doc = Nokogiri::XML(File.read input_file)
+    puts @doc.xpath("/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/title").text
   end
 
   def institute
@@ -409,7 +410,7 @@ class Iso2Json
 end
 
 Dir.glob('./*.xml').each do |input_file|
-  output_file = File::dirname(input_file) + "/geoblacklight.json"
+  output_file = File::dirname(input_file) + "/" + input_file + ".json"
   puts "#{input_file} => #{output_file}" if VERBOSE
 
   
